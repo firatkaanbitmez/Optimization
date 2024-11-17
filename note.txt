@@ -1,5 +1,0 @@
-Project-1
-Bracketing , 298 5.8. örnek
-
-Project-2
-Quadratic ve Cubic Interpolasyon - (301-308)

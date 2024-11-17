@@ -1,0 +1,10 @@
+Project-1
+Bracketing , 298 5.8. örnek  Bracketing yöntemiyle algoritma kodlanacak
+
+Project-2
+Quadratic Interpolasyon 301.sayfa ve Cubic Interpolasyon 308.Sayfa
+İkisinden biriyle algoritmayı kodla Rapor olarak detaylı şekilde iki yöntemide anlat.
+
+
+
+Lagrange Interpolasyon nasıl temsil edersin
