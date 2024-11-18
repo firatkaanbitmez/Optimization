@@ -1,69 +1,107 @@
+# Project-1: Bracketing Method (Golden Section Search)
 import numpy as np
 
-# Altın Oran sabiti
-GOLDEN_RATIO = (1 + np.sqrt(5)) / 2
-EPSILON = 1e-8  # Küçük bir değer, sıfıra bölme hatalarını önlemek için
+# Sabitler
+GOLDEN_RATIO = (1 + np.sqrt(5)) / 2  # Altın Oran sabiti, minimumu bulmak için kullanılan sabit oran
+EPSILON = 1e-8  # Sıfıra bölme hatalarını önlemek için küçük bir değer
 
+# Amaç Fonksiyonu
 def f(x):
+    # x değeri sıfıra yakınsa, sıfıra bölme hatasından kaçınmak için küçük bir epsilon ekleniyor
     if abs(x) < EPSILON:
-        x = np.sign(x) * EPSILON  # Sıfıra bölme hatalarını önlemek için küçük bir epsilon ekle
+        x = np.sign(x) * EPSILON  # x'in işaretine göre küçük bir epsilon ekle
+    # Amaç fonksiyonunun değeri hesaplanıp geri döndürülüyor
     return 0.65 - (0.75 / (1 + x**2)) - 0.65 * np.arctan(1 / x)
 
-def bracketing_method(f, a, b, n=6, verbose=True):
+# Altın Oran Arama Yöntemi (Bracketing Method)
+def bracketing_method(f, a, b, tol=1e-6, max_iter=100, verbose=True):
     """
-    Kitapta verilen 5.8 numaralı örneğe uygun olarak bracketing yöntemi ile minimumu bulma.
+    Altın Oran Arama Yöntemi kullanarak f fonksiyonunun minimumunu bulur.
     
     Parametreler:
-    f: Hedef fonksiyon
-    a: Aralığın başlangıç noktası
-    b: Aralığın bitiş noktası
-    n: Toplam iterasyon sayısı
-    verbose: İterasyon detaylarını yazdırmak için bayrak
+    f: Minimum bulunacak amaç fonksiyonu
+    a: Aralığın başlangıcı
+    b: Aralığın sonu
+    tol: Yakınsama toleransı
+    max_iter: Maksimum iterasyon sayısı
+    verbose: İterasyon detaylarını yazdırmak için
     
-    Döndürülen:
-    Minimum bulunduğu aralık [x_min, x_max]
+    Döndürür:
+    Minimum nokta tahmini ve bu noktadaki fonksiyon değeri
     """
-    L0 = b - a
-    x1 = a + 0.382 * L0
-    x2 = b - 0.382 * L0
-    f1 = f(x1)
-    f2 = f(x2)
+    # Hatalı parametre kontrolleri
+    if a >= b:
+        raise ValueError("Geçersiz aralık: 'a' değeri 'b' değerinden küçük olmalıdır.")
+    if tol <= 0:
+        raise ValueError("Tolerans pozitif olmalıdır.")
+    if max_iter <= 0:
+        raise ValueError("Maksimum iterasyon sayısı pozitif olmalıdır.")
 
-    for iteration in range(1, n + 1):
+    # Başlangıç noktalarının hesaplanması
+    # x1 ve x2, aralığın içindeki iki nokta olarak hesaplanır ve altın oran kullanılır
+    x1 = b - (b - a) / GOLDEN_RATIO
+    x2 = a + (b - a) / GOLDEN_RATIO
+    f1, f2 = f(x1), f(x2)  # x1 ve x2'deki fonksiyon değerleri hesaplanır
+
+    # Altın Oran Arama iterasyonları
+    iteration = 0
+    while abs(b - a) > tol and iteration < max_iter:
+        iteration += 1
+        # İterasyon bilgileri isteğe bağlı olarak yazdırılır
         if verbose:
-            print(f"Iterasyon {iteration}: x1 = {x1:.4f}, f(x1) = {f1:.6f}, x2 = {x2:.4f}, f(x2) = {f2:.6f}")
+            print(f"İterasyon {iteration}: a = {a:.12f}, b = {b:.12f}, x1 = {x1:.12f}, x2 = {x2:.12f}, f1 = {f1:.12f}, f2 = {f2:.12f}")
 
-        if f1 < f2:
-            b = x2
-            x2 = x1
-            f2 = f1
-            L0 = b - a
-            x1 = a + 0.382 * L0
-            f1 = f(x1)
+        # Aralık güncelleme
+        # Eğer f1 > f2 ise minimum nokta x2'de veya sağında olmalıdır, bu yüzden a güncellenir
+        if f1 > f2:
+            a = x1  # a, x1'e güncellenir
+            x1 = x2  # x1, x2'ye güncellenir (aralık daralır)
+            f1 = f2  # f1, f2'ye güncellenir (hesaplama tekrarı önlenir)
+            x2 = a + (b - a) / GOLDEN_RATIO  # Yeni x2 değeri hesaplanır
+            f2 = f(x2)  # Yeni x2'de fonksiyon değeri hesaplanır
         else:
-            a = x1
-            x1 = x2
-            f1 = f2
-            L0 = b - a
-            x2 = b - 0.382 * L0
-            f2 = f(x2)
+            # Eğer f1 <= f2 ise minimum nokta x1'de veya solunda olmalıdır, bu yüzden b güncellenir
+            b = x2  # b, x2'ye güncellenir
+            x2 = x1  # x2, x1'e güncellenir (aralık daralır)
+            f2 = f1  # f2, f1'e güncellenir (hesaplama tekrarı önlenir)
+            x1 = b - (b - a) / GOLDEN_RATIO  # Yeni x1 değeri hesaplanır
+            f1 = f(x1)  # Yeni x1'de fonksiyon değeri hesaplanır
 
-        if verbose:
-            print(f"Yeni aralık: [{a:.4f}, {b:.4f}]")
+    # Yakınsama kontrolü
+    if verbose:
+        if abs(b - a) <= tol:
+            print(f"{iteration} iterasyon sonunda yakınsadı.")
+        else:
+            print("Maksimum iterasyon sayısına ulaşıldı, yakınsama sağlanamadı.")
 
-        # Erken durdurma kriteri: Aralık boyutu belirli bir eşik değerden küçükse durdur
-        if abs(b - a) < EPSILON:
-            break
+    # Yakınsama sağlandıktan sonra aralığın ortası minimum nokta olarak döndürülür
+    min_point = (a + b) / 2
+    min_value = f(min_point)  # Bu noktadaki fonksiyon değeri hesaplanır
 
     if verbose:
-        print(f"Minimumun bulunduğu aralık: [{a:.4f}, {b:.4f}]")
-    return a, b
+        print(f"Tahmin edilen minimum nokta: x = {min_point:.12f}, f(x) = {min_value:.12f}")
+        print("\nSonuç Özeti:")
+        print(f"Başlangıç aralığı: [{a:.12f}, {b:.12f}]")
+        print(f"Toplam iterasyon sayısı: {iteration}")
+        print(f"Son aralık genişliği: {abs(b - a):.12e}")
+        print(f"Minimum nokta: x = {min_point:.12f}")
+        print(f"Minimum noktadaki fonksiyon değeri: f(x) = {min_value:.12f}")
 
-a = 0.0
-b = 3.0
+    return min_point, min_value
 
-try:
-    x_min_ara = bracketing_method(f, a, b)
-    print(f"Minimumun olduğu aralık: {x_min_ara}")
-except Exception as e:
-    print(str(e))
+# Altın Oran Arama yönteminin örnek kullanımı
+def main():
+    try:
+        # Başlangıç aralığı [a, b]
+        a, b = 0.0, 3.0
+        # Minimum noktayı bulmak için bracketing_method fonksiyonu çağrılır
+        min_point, min_value = bracketing_method(f, a, b, tol=1e-12, max_iter=100, verbose=True)
+        # Tahmin edilen minimum nokta ve bu noktadaki fonksiyon değeri yazdırılır
+        print(f"\nSonuç: Tahmin edilen minimum nokta: x = {min_point:.12f}, f(x) = {min_value:.12f}")
+    except ValueError as e:
+        # Hatalı parametre girildiğinde kullanıcıya hata mesajı gösterilir
+        print(f"Hata: {e}")
+
+# Ana fonksiyonun çağrılması
+if __name__ == "__main__":
+    main()
