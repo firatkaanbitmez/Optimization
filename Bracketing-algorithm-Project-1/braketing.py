@@ -93,7 +93,7 @@ def bracketing_method(f, a, b, tol=1e-6, max_iter=100, verbose=True):
 def main():
     try:
         # Başlangıç aralığı [a, b]
-        a, b = 0.0, 3.0
+        a, b = -2.0, 2.0
         # Minimum noktayı bulmak için bracketing_method fonksiyonu çağrılır
         min_point, min_value = bracketing_method(f, a, b, tol=1e-12, max_iter=100, verbose=True)
         # Tahmin edilen minimum nokta ve bu noktadaki fonksiyon değeri yazdırılır
