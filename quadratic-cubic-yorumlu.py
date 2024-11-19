@@ -1,6 +1,6 @@
 import numpy as np
 
-
+# Küçük bir epsilon değeri tanımlanır, sayısal kararsızlıkları önlemek için
 EPSILON = 1e-10
 
 def quadratic_interpolation(f, x0, x1, x2, tolerance=1e-5, max_iter=100):
