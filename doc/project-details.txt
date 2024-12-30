@@ -6,8 +6,15 @@ Quadratic Interpolasyon 301.sayfa ve Cubic Interpolasyon 308.Sayfa
 İkisinden biriyle algoritmayı kodla Rapor olarak detaylı şekilde iki yöntemide anlat.
 
 Project-3
+<<<<<<< HEAD:project-details.txt
 Conjugate Gradient Method (383)   Notta yazıyor: (Fletcher-Reeves)
 
 Project-4
 Newton's Method (389)
 
+=======
+Newton Method Sayfa 389
+
+Project-4
+Conjugate Gradient Sayfa 383
+>>>>>>> 1611a7475bf6533d8e6b80aa9552e7308f84dac3:doc/project-details.txt
