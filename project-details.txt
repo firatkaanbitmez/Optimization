@@ -5,6 +5,9 @@ Project-2
 Quadratic Interpolasyon 301.sayfa ve Cubic Interpolasyon 308.Sayfa
 İkisinden biriyle algoritmayı kodla Rapor olarak detaylı şekilde iki yöntemide anlat.
 
+Project-3
+Conjugate Gradient Method (383)   Notta yazıyor: (Fletcher-Reeves)
 
+Project-4
+Newton's Method (389)
 
-Lagrange Interpolasyon nasıl temsil edersin
