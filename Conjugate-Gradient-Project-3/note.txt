@@ -1,0 +1,77 @@
+Mühendislik Optimizasyonu (Engineering Optimization)
+
+Conjugate Gradient (Fletcher-Reeves) Yöntemi Üzerine Detaylı Rapor
+
+### Giriş
+Conjugate Gradient (Bağlı Gradient) yöntemi, çok boyutlu optimizasyon problemlerinde etkili bir yöntem olarak dikkat çeker. Fletcher ve Reeves tarafından geliştirilen bu yöntem, en dik iniş yöntemini geliştirerek daha hızlı ve doğruluğu yüksek çözümler sunar. Özellikle kuadratik fonksiyonlar için n iterasyondan daha az bir sürede optimum çözümü garanti eder.
+
+Bu raporda Fletcher-Reeves yönteminin teorik temelleri, algoritmik adımları, avantajları ve uygulama alanları detaylı olarak incelenmiştir.
+
+---
+
+### Teorik Temeller
+
+Fletcher-Reeves yöntemi, gradient tabanlı yöntemlerin doğruluğunu ve hızını artırmak amacıyla geliştirilmiştir. Bu yöntem, optimizasyon sürecinde ardışık arama yönlerinin birbirine bağlı (conjugate) olması gerekliliğine dayanır. Kuadratik fonksiyonlar için, conjugate yöntemlerin dörtgensel yakınsama özelliği önemlidir. Bu özellik, algoritmanın karmaşıklığını azaltır ve hızlı bir çözüm sunar.
+
+Kuadratik bir fonksiyon genellikle şu şekilde tanımlanır:
+
+f(X) = ½ X^TAX + B^TX + C
+
+Burada A, simetrik ve pozitif tanımlı bir matristir. Fletcher-Reeves yöntemi, bu fonksiyonun optimize edilmesinde kullanılan arama yönünü aşağıdaki gibi hesaplar:
+
+1. Gradient hesaplanır: \( \nabla f(X) \)
+2. İlk arama yönü: \( S_1 = -\nabla f_1 \)
+3. Ardışık yönler: \( S_k = -\nabla f_k + \beta_k S_{k-1} \)
+
+Burada \( \beta_k \) aşağıdaki gibi hesaplanır:
+
+\[ \beta_k = \frac{\nabla f_k^T \nabla f_k}{\nabla f_{k-1}^T \nabla f_{k-1}} \]
+
+Bu ifade, ardışık gradientlerin bağlılığını sağlar ve iterasyon sürecinde hızlı bir yakınsama elde edilir.
+
+---
+
+### Fletcher-Reeves Algoritması
+
+1. **Başlangıç:** Rastgele bir X1 noktasi seçilir. Gradient \( \nabla f(X_1) \) hesaplanır ve ilk arama yönü \( S_1 = -\nabla f_1 \) olarak belirlenir.
+2. **Adım Uzunluğu:** Her iterasyonda optimum adım uzunluğu \( \lambda_k \) belirlenir. Bu uzunluk, aşağıdaki denkleme göre hesaplanır:
+
+   \[ \lambda_k = \text{argmin}_{\lambda} f(X_k + \lambda S_k) \]
+
+3. **Yeni Nokta Hesaplama:** Yeni nokta \( X_{k+1} = X_k + \lambda_k S_k \) olarak bulunur.
+4. **Gradient ve Yön Hesaplama:** Gradient \( \nabla f(X_{k+1}) \) ve yeni yön \( S_{k+1} \) aşağıdaki gibi hesaplanır:
+
+   \[ S_{k+1} = -\nabla f_{k+1} + \beta_{k+1} S_k \]
+
+5. **Durdurma Kriterleri:** Fonksiyon değerindeki değişim veya gradient büyüklüğü kritik bir eşik değerden küçükse algoritma durdurulur.
+
+---
+
+### Avantajlar ve Sınırlamalar
+
+#### Avantajlar
+
+1. **Hızlı Yakınsama:** Kuadratik fonksiyonlar için n iterasyondan az bir sürede çözüm sağlar.
+2. **Bellek Verimliliği:** Yöntem, ikinci dereceden türev bilgisi gerektirmez ve bu nedenle Newton yöntemine göre daha az bellek kullanır.
+3. **Genel Uygulama Alanı:** Hem kuadratik hem de genel fonksiyonlar için uygulanabilir.
+
+#### Sınırlamalar
+
+1. **Rounding Hataları:** Uzun iterasyonlarda biriken hata, yakınsamayı yavaşlatabilir.
+2. **Yeniden Başlatma Gereksinimi:** Algoritma, bazen m adımda bir yeniden başlatılarak daha iyi performans sağlar.
+
+---
+
+### Uygulama Alanları
+
+1. **Mühendislik Tasarımı:** Mekanik ve yapısal tasarımlarda maliyet ve dayanıklılık optimizasyonu.
+2. **Makine Öğrenmesi:** Derin öğrenme modellerinin ağırlıklarını optimize etme.
+3. **Finans:** Portföy optimizasyonunda risk ve getirinin dengelenmesi.
+4. **Fiziksel Sistemler:** Akışkanlar mekaniği ve enerji sistemlerinde parametre optimizasyonu.
+
+---
+
+### Sonuç
+
+Fletcher-Reeves yöntemi, gradient tabanlı optimizasyon teknikleri arasında çok etkili bir yöntemdir. Hem teorik temelleri hem de pratik uygulamaları ile genış bir kullanım alanı sunar. Algoritmanın çalışma prensiplerinin ve avantajlarının anlaşılması, mühendislik ve bilimsel problemlerde etkili çözümler geliştirilmesine olanak tanır.
+
