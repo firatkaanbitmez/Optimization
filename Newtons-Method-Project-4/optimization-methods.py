@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext
 import matplotlib.pyplot as plt
 
-# Minimize edilecek fonksiyon ve türevini (gradyanını) tanımlıyoruz
+# Minimize edilecek fonksiyon ve türevini 
 def function(x):
     """
     Amaç fonksiyonu f(x1, x2) = x1^2 - x1*x2 + x2^2 + x1 + x2.
@@ -20,43 +20,45 @@ def gradient(x):
     df_dx2 = 2*x2 - x1 + 1  # x2'ye göre türev
     return np.array([df_dx1, df_dx2])
 
+def hessian(_x):
+    """
+    Hessian matrisi hesaplanır.
+    """
+    return np.array([[2, -1], [-1, 2]])
+
 def fletcher_reeves_method(func, grad, x0, tol=1e-5, max_iter=100, console_output=None, restart_interval=10):
-    """
-    Fletcher-Reeves yönteminin uygulanması.
+    x = x0
+    g = grad(x)
+    
+    if np.linalg.norm(g) < tol:
+        if console_output is not None:
+            console_output.append("Başlangıç noktasının gradyanı çok küçük, doğrudan çözüm kabul edildi.")
+        return x, [x.copy()]
 
-    Parametreler:
-        func: Minimize edilecek fonksiyon.
-        grad: Fonksiyonun gradyanı (türev fonksiyonu).
-        x0: Başlangıç noktası (numpy array).
-        tol: Hata toleransı (küçük değişimler için durma şartı).
-        max_iter: Maksimum iterasyon sayısı.
-        console_output: Konsol çıktıları için bir liste (arayüze aktarmak için).
-        restart_interval: Belirli bir iterasyon sonrası yeniden başlatma (steepest descent) mekanizması.
-
-    Dönüş:
-        x_opt: Optimum çözüm.
-        history: Görselleştirme için noktaların listesi.
-    """
-    x = x0  # Başlangıç noktası
-    g = grad(x)  # Başlangıç gradyanı
-    d = -g  # İlk arama yönü (negatif gradyan)
-    history = [x.copy()]  # Çözüm geçmişini kaydet
-    prev_fval = func(x)  # Bir önceki fonksiyon değeri
+    d = -g
+    history = [x.copy()]
+    prev_fval = func(x)
 
     for i in range(max_iter):
-        # Adım büyüklüğü (alpha) bulunuyor
-        alpha = -np.dot(g, d) / np.dot(d, np.dot(np.eye(len(x)), d))  # Basit bir adım arama
-        x_new = x + alpha * d  # Yeni nokta hesaplanıyor
-
-        # Durdurma kriterleri:
+        if np.linalg.norm(d) < 1e-15:
+            if console_output is not None:
+                console_output.append(f"{i+1}. iterasyonda d vektörü ~ 0, algoritma durduruldu.")
+            break
+        
+        # Adım büyüklüğü
+        alpha = -np.dot(g, d) / np.dot(d, d)  
+        
+        x_new = x + alpha * d
         fval = func(x_new)
+
+        # Yakınsama kontrolleri
         if np.linalg.norm(grad(x_new)) < tol:
             msg = f"{i+1}. iterasyonda gradyan normu ile yakınsama sağlandı."
             if console_output is not None:
                 console_output.append(msg)
             break
         if abs(fval - prev_fval) < tol:
-            msg = f"{i+1}. iterasyonda fonksiyon değişimi ile yakınsama sağlandı."
+            msg = f"{i+1}. iterasyonda fonksiyon değeri değişimi ile yakınsama sağlandı."
             if console_output is not None:
                 console_output.append(msg)
             break
@@ -66,25 +68,24 @@ def fletcher_reeves_method(func, grad, x0, tol=1e-5, max_iter=100, console_outpu
                 console_output.append(msg)
             break
 
-        # Yeniden başlatma mekanizması
+        # Yeniden başlatma
         if i > 0 and i % restart_interval == 0:
             d = -grad(x_new)
-            msg = f"{i+1}. iterasyonda yeniden başlatma yapıldı."
+            beta = 0.0  # restart sırasında beta'yı 0 kabul
+            msg = f"{i+1}. iterasyonda yeniden başlatma yapıldı (beta=0)."
             if console_output is not None:
                 console_output.append(msg)
         else:
-            # Yeni gradyan ve beta (Fletcher-Reeves formülü) hesaplanıyor
             g_new = grad(x_new)
             beta = np.dot(g_new, g_new) / np.dot(g, g)
             d = -g_new + beta * d
             g = g_new
 
-        # Değişkenler güncelleniyor
-        prev_fval = fval
         x = x_new
+        prev_fval = fval
         history.append(x.copy())
-
-        # Konsol çıktısı ile detaylı bilgi
+        
+        # Bilgi mesajı
         msg = (f"Iterasyon {i+1}:\n"
                f"    x = {x}\n"
                f"    f(x) = {fval}\n"
@@ -95,6 +96,7 @@ def fletcher_reeves_method(func, grad, x0, tol=1e-5, max_iter=100, console_outpu
             console_output.append(msg)
 
     return x, history
+
 
 def newtons_method(func, grad, hessian, x0, tol=1e-5, max_iter=100, console_output=None):
     """
@@ -146,13 +148,16 @@ def newtons_method(func, grad, hessian, x0, tol=1e-5, max_iter=100, console_outp
 
         x = x_new
 
-    return x, history
+        # Konsol çıktısı ile detaylı bilgi
+        msg = (f"Iterasyon {i+1}:\n"
+               f"    x = {x}\n"
+               f"    f(x) = {func(x)}\n"
+               f"    Gradyan = {g}\n"
+               f"    Adım = {delta_x}")
+        if console_output is not None:
+            console_output.append(msg)
 
-def hessian(_x):
-    """
-    Hessian matrisi hesaplanır.
-    """
-    return np.array([[2, -1], [-1, 2]])
+    return x, history
 
 def create_tabbed_interface():
     """
